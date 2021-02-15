@@ -1,4 +1,4 @@
-This is a script which will find any new videos of [Ciwi's Podcast](https://www.youtube.com/channel/UCchHlGybrBFkP6qVxeaKMyg/videos?&ab_channel=CiaranMcCloy) from Youtube and download the audio track. Tracks will then be stored in the repo to be referenced by the (Wordpress site)[https://ciwiswebsite.wordpress.com/]. This augments the RSS feed used to publish the podcast on Spotify.
+This is a script which will find any new videos of [Ciwi's Podcast](https://www.youtube.com/channel/UCchHlGybrBFkP6qVxeaKMyg/videos?&ab_channel=CiaranMcCloy) from Youtube and download the audio track. Tracks will then be stored in the repo to be referenced by the [Wordpress site](https://ciwiswebsite.wordpress.com/). This augments the RSS feed used to publish the podcast on Spotify.
 
 ## Original Script
 This script has been adapted for personal purposes. The more generalised original verion is located [here](https://github.com/bardisty/ytdlrc).
