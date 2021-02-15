@@ -1,15 +1,24 @@
+# Overview
 This is a script which will find any new videos of [Ciwi's Podcast](https://www.youtube.com/channel/UCchHlGybrBFkP6qVxeaKMyg/videos?&ab_channel=CiaranMcCloy) from Youtube and download the audio track. Tracks will then be stored in the repo to be referenced by the [Wordpress site](https://ciwiswebsite.wordpress.com/). This augments the RSS feed used to publish the podcast on Spotify.
 
-## Original Script
+# Original Script
 This script has been adapted for personal purposes. The more generalised original verion is located [here](https://github.com/bardisty/ytdlrc).
 
-## Running the script
-Navigate to the directory of the getaudio script. Open a terminal window and type ./getaudio. Any new episodes of Ciwi's Podcast will be downloaded as audio to the new directory. They will be added to an archive list so they will not be re-downloaded. Push up to tje repo.
+# Running the script
 
-## Configuration
-To change the source, amend the url in the get.list file
+## Automatic
+The script will run daily at 1pm on a cron job to check for any new podcasts. If any are found, they will be pushed up to the repo and an alert will fire to update the Wordpress site so Spotify can get the new episode. See [here](https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx/) for more info on setting up a cron job.
 
-## Add audio file to the Wordpress RSS feed
+## Manual
+Navigate to the directory of the getaudio script. Open a terminal window and type ./getaudio.
+
+
+After the script has finished, any new episodes of Ciwi's Podcast will be downloaded as audio to the new directory. They will be added to an archive list so they will not be re-downloaded. Theyy will be pushed up to the repo automatically as per local git setup.
+
+# Configuration
+To change the youtube source, amend the url in the get.list file
+
+# Add audio file to the Wordpress RSS feed
 Once the audio files are in the repo, they can be added to the website as a post.
 Login in to the wordpress site and go into the settings. Click Posts on the left hand side and 'Add a new post'
 
