@@ -1,7 +1,7 @@
 This is a script which will find any new videos of (Ciwi's Podcast)[https://www.youtube.com/channel/UCchHlGybrBFkP6qVxeaKMyg/videos?&ab_channel=CiaranMcCloy] from Youtube and download the audio track. Tracks will then be stored in the repo to be referenced by the (Wordpress site)[https://ciwiswebsite.wordpress.com/]. This augments the RSS feed used to publish the podcast on Spotify.
 
 ## Running the script
-Navigate to the directory of the getaudio script. Open a terminal window and type ./getaudio. Any new episodes of Ciwi's Podcast will be downloaded as audio to the new directory. They will be added to an archive list so they will not be re-downloaded.
+Navigate to the directory of the getaudio script. Open a terminal window and type ./getaudio. Any new episodes of Ciwi's Podcast will be downloaded as audio to the new directory. They will be added to an archive list so they will not be re-downloaded. Push up to tje repo.
 
 ## Configuration
 To change the source, amend the url in the get.list file
