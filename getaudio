@@ -165,6 +165,8 @@ delete_lock_file() {
   fi
 }
 
+#Make sure the code is up to date
+git pull
 
 # Colors for info / error printouts
 if tty > /dev/null 2>&1; then
