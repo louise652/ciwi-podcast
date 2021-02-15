@@ -355,6 +355,7 @@ if [ -s "$getaudio_source" ]; then
   rm "$fifo"
 fi
 
+# Push new podcasts to git
 git add .
 git commit -m"Add new podcast"
 if [ -n "$(git status - porcelain)" ];
