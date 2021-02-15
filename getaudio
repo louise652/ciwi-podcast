@@ -357,10 +357,10 @@ git add .
 git commit -m"Add new podcast"
 if [ -n "$(git status - porcelain)" ];
 then
- say_debug "IT IS CLEAN"
+ say "IT IS CLEAN"
 else
  git status
- say_debug "Pushing data to remote server!!!"
+ say "Pushing data to remote server!!!"
  git push -u origin master
 fi
 
