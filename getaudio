@@ -357,7 +357,7 @@ git add .
 git commit -m"Add new podcast"
 if [ -n "$(git status - porcelain)" ];
 then
- say "IT IS CLEAN"
+ say "Git status is CLEAN"
 else
  git status
  say "Pushing data to remote server!!!"
