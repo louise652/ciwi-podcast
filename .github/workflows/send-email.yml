@@ -29,3 +29,4 @@ jobs:
             4. Finally, click on insert from url and enter the url of the audio file, located on Github. In the repo, locate the audio file, right click the View Raw link and copy the link address- this will be what you need.
             5. Publish and save all the changes and Spotify should pick up the new episode :)
           contentType: text/html
+          attachments: '[{"path":"README.md"}]'
