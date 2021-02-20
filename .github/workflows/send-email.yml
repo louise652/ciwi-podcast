@@ -11,9 +11,9 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - uses: dawidd6/action-send-mail@v2
       - name: ✨ Send email,
-        working-directory: ./ciwi-podcast
-        uses: dawidd6/action-send-mail@v2
+      working-directory: ./ciwi-podcast
 
         with:
           server_address: smtp.gmail.com
