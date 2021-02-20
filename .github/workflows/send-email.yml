@@ -12,13 +12,13 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: ✨ Send email,
-        uses: dawidd6/action-send-mail@v1.3.0
+        uses: dawidd6/action-send-mail@v2
         with:
           server_address: smtp.gmail.com
           server_port: 465
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: Your a star ✨
-          body: ${{ github.actor }} Hi!! ${{ github.repository }}
+          body: file://README.md
           to: ${{ secrets.MAIL_USERNAME }}
           from: ${{ secrets.MAIL_USERNAME }}
