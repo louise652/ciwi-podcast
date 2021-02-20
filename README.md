@@ -6,9 +6,11 @@ This script has been adapted for personal purposes. The more generalised origina
 
 # Prerequisites
 Install [youtube-dl](https://github.com/ytdl-org/youtube-dl)
+
+Ensure that your git repo is configured correctly as the script will pull, commit and push any chnages.
 # Running the script
 
-## Automatic
+## Automatic(not yet implemented)
 The script will run daily at 1pm on a cron job to check for any new podcasts. If any are found, they will be pushed up to the repo and an alert will fire to update the Wordpress site so Spotify can get the new episode. See [here](https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx/) for more info on setting up a cron job.
 
 ## Manual
