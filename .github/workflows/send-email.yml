@@ -1,5 +1,4 @@
 name: Send Mail
-working-directory: ciwi-podcast
 
 on: push
 
@@ -13,7 +12,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: ✨ Send email,
+        working-directory: ./ciwi-podcast
         uses: dawidd6/action-send-mail@v2
+
         with:
           server_address: smtp.gmail.com
           server_port: 465
