@@ -16,7 +16,7 @@ jobs:
         with:
           server_address: smtp.gmail.com
           server_port: 465
-          username: quadmx08
+          username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: Your a star ✨
           body: ${{ github.actor }} Hi!! ${{ github.repository }}
