@@ -1,0 +1,366 @@
+# Enable debugging for verbose output
+debug=true
+
+# Working directory for the script
+root_directory="${HOME}/Documents/personal/ciwi-podcast"
+
+# Where to download files
+download_directory="${root_directory%/}/new"
+
+# List of URL's / channels / playlists to download, e.g.:
+#     * `ytuser:username`
+#     * `https://www.youtube.com/user/username`
+#     * `https://www.youtube.com/playlist?list=PLK9Sc5q_4K6aNajVLKtkaAB1JGmKyccf2`
+getaudio_source="${root_directory%/}/get.list"
+
+# List of downloaded/processed files; prevents youtube-dl from
+# redownloading files
+archive_list="${root_directory%/}/archive.list"
+
+# What video format(s) to grab
+format="m4a"
+
+# Output template for downloaded filenames
+output_template="%(uploader)s.%(upload_date)s.%(title)s.%(resolution)s.%(id)s.%(ext)s"
+
+# What value to grab from the first video in a playlist
+#     * The default value - `playlist_title` - will play well with YouTube
+#       usernames/channels (ytuser:username or URL to channel), as well as
+#       playlists containing videos from different uploaders. However it
+#       will not play well with individual YouTube video URL's, as these
+#       usually return "NA" as the playlist title. A value of `uploader`
+#       will play well with individual videos and entire channels but not
+#       with playlists containing videos from different uploaders.
+remote_vid_value="playlist_title"
+
+# If `youtube-dl` is unable to pull `remote_vid_value` (default:
+# playlist_title) from the first video in a playlist, use this value instead
+#     * See the `skip_on_fail` option if you would rather skip the
+#       playlist altogether so videos are never downloaded / uploaded into a
+#       directory that doesn't match the name of the playlist / channel
+default_vid_value="unknown-playlist"
+
+# Skip playlist if `youtube-dl` is unable to pull `remote_vid_value`
+# (default: playlist_title) from the first video in a playlist
+#     * Set to `false` if you don't want to skip a playlist if `youtube-dl`
+#       fails to pull the `remote_vid_value` (default: playlist_title).
+#       Instead, videos will be downloaded / uploaded into a directory named
+#       after `default_vid_value` (default: "unknown-playlist")
+skip_on_fail=true
+
+# By default, the directories videos are saved in have titlecase names, e.g.
+# `Some_Channel_Name`. Set to `true` if you prefer lowercase names.
+lowercase_directories=false
+
+
+# ---------- You probably don't need to edit anything below this ----------
+
+
+# POSIX-friendly variable printing
+say() {
+  # Prefix for all printouts
+  printout_prefix="${text_bold}${text_yellow}[GETAUDIO]${text_reset}"
+  printf %s\\n "${printout_prefix} ${1}"
+}
+
+
+# Error printouts
+say_error() {
+  # Prefix for error printouts
+  printout_prefix_error="${text_bold}${text_red}[Error]${text_reset}"
+  say "${printout_prefix_error} ${1}" >&2
+}
+
+
+say_debug() {
+  message_type="$2"
+  if [ "$debug" = true ]; then
+
+    if [ "$message_type" = "success" ]; then
+      printout_prefix_debug="${text_bold}${text_gray}[Debug]${text_green} [OK]${text_reset}"
+    else
+      printout_prefix_debug="${text_bold}${text_gray}[Debug]${text_reset}"
+    fi
+
+    say "${printout_prefix_debug} ${1}"
+
+  fi
+}
+
+
+# Determine if a directory is empty
+# Source: http://www.etalabs.net/sh_tricks.html
+is_empty() {
+  cd "$1" || return 0
+  set -- .[!.]* ; test -f "$1" && return 1
+  set -- ..?* ; test -f "$1" && return 1
+  set -- * ; test -f "$1" && return 1
+  return 0
+}
+
+
+command_exists() {
+  cmd="$1"
+
+  if eval type type > /dev/null 2>&1; then
+    eval type "$cmd" > /dev/null 2>&1
+  else
+    command -v "$cmd" > /dev/null 2>&1
+  fi
+
+  return $?
+}
+
+
+# Get a value from the video (default is playlist_title) and store it in a
+# variable
+get_video_value() {
+  # Printout example: "Grabbing 'playlist_title' from 'ytuser:username'..."
+  say_debug "Grabbing '${1}' from '${3}'..."
+
+  video_value=$(
+    youtube-dl \
+      --force-ipv4 \
+      --get-filename \
+      --output "%(${1})s" \
+      --playlist-items "$2" \
+      --restrict-filenames \
+      "$3"
+  )
+
+  # Assign a default value if `youtube-dl` was unable to pull
+  # `playlist_title` from the video
+  video_value="${video_value:-$default_vid_value}"
+}
+
+
+download_all_the_things() {
+  # shellcheck disable=SC2086
+  youtube-dl \
+    --force-ipv4 \
+    --continue \
+    --download-archive "$archive_list" \
+    --format "$format" \
+    --ignore-config \
+    --ignore-errors \
+    --no-overwrites \
+    --output "${download_directory%/}/${video_value}/${output_template}" \
+    --restrict-filenames \
+    "$ytdl_debug_flags" \
+    "$1"
+}
+
+delete_lock_file() {
+  say_debug "Removing lock file..."
+  if [ -f "$lock_file" ]; then
+    if ! rm "$lock_file"; then
+      say_error "Could not delete lock file: ${lock_file}"
+      exit 1
+    else
+      say_debug "Lock file deleted." success
+    fi
+  else
+    say_error "Lock file doesn't exist: ${lock_file}"
+  fi
+}
+
+#Make sure the code is up to date
+git pull
+
+# Colors for info / error printouts
+if tty > /dev/null 2>&1; then
+  if command_exists tput; then
+    text_reset=$(tput sgr0)
+    text_bold=$(tput bold)
+    text_red=$(tput setaf 1)
+    text_yellow=$(tput setaf 3)
+    text_green=$(tput setaf 2)
+    text_gray=$(tput setaf 8)
+  fi
+fi
+
+
+# Where to store temp runtime files (FIFO and lock file)
+temp_file_dir="/tmp"
+
+# Where to store FIFO for reading the snatch list
+fifo="${temp_file_dir%/}/getaudio.fifo"
+
+# Where to store lock file to prevent the script from running more than once
+# at a time
+lock_file="${temp_file_dir%/}/getaudio.lock"
+
+
+# Set `youtube-dl` command flag depending on debugging status
+if [ "$debug" = true ]; then
+  ytdl_debug_flags="--verbose"
+else
+  ytdl_debug_flags="--quiet"
+fi
+
+# Catch CTRL-C; clean up temp files and exit script to prevent further
+# commands from executing
+trap 'delete_lock_file && rm "$fifo" && exit 0' 2
+
+
+# Check for existence of lock file
+if [ -f "$lock_file" ]; then
+  # Lock file exists; do nothing
+  say_debug "Lock file exists: ${lock_file}"
+  say_debug "Exiting..."
+  exit 0
+else
+  # Lock file doesn't exist; create it
+  say_debug "Lock file doesn't exist. Attempting to create '${lock_file}'..."
+  # Check if temp file directory exists
+  if [ -d "${temp_file_dir%/}" ]; then
+    # Temp file directory exists; attempt to create lock file
+    if touch "$lock_file"; then
+        say_debug "Creating '${lock_file}' succeeded. Continuing..." success
+      else
+        say_error "Could not create lock file '${lock_file}'. Exiting..."
+        exit 1
+      fi
+  else
+    # Temp file directory does not exist; attempt to create it
+    say_debug "Temp file directory '${temp_file_dir%/}' not found. Attempting to create it..."
+    if mkdir -p "${temp_file_dir%/}"; then
+      # Attempt to create lock file
+      say_debug "Creating '${temp_file_dir%/}' succeeded. Creating lock file..." success
+      if touch "$lock_file"; then
+        say_debug "Creating '${lock_file}' succeeded. Continuing..." success
+      else
+        say_error "Could not create lock file '${lock_file}'. Exiting..."
+        exit 1
+      fi
+    else
+      say_error "Could not create temp directory '${temp_file_dir%/}'. Exiting..."
+      exit 1
+    fi
+  fi
+fi
+
+
+# Generate required runtime directory and files if they don't already exist
+if [ ! -d "${download_directory%/}" ]; then
+  say "Creating download directory: ${download_directory%/}"
+  if ! mkdir -p "${download_directory%/}"; then
+    say_error "Could not create download directory '${download_directory%/}'. Exiting..."
+    delete_lock_file
+    exit 1
+  fi
+fi
+
+if [ ! -f "$getaudio_source" ]; then
+  say "Creating get list: ${getaudio_source}"
+  if ! touch "$getaudio_source"; then
+    say_error "Could not create get list '${getaudio_source}'. Exiting..."
+    delete_lock_file
+    exit 1
+  fi
+fi
+
+if [ ! -f "$archive_list" ]; then
+  say "Creating archive list: ${archive_list}"
+  if ! touch "$archive_list"; then
+    say_error "Could not create archive list '${archive_list}'. Exiting..."
+    delete_lock_file
+    exit 1
+  fi
+fi
+
+
+if [ ! -s "$getaudio_source" ]; then
+  say_error "${getaudio_source} is empty. Exiting..."
+  delete_lock_file
+  exit 1
+fi
+
+
+say_debug "Checking required commands..."
+required_commands="youtube-dl ffmpeg"
+for cmd in $required_commands; do
+  if ! command_exists "$cmd"; then
+    say_error "Command not found: ${cmd}"
+    delete_lock_file
+    exit 127
+  else
+    say_debug "Command found: ${cmd}" success
+  fi
+done
+
+
+# Read through `getaudio_source` file only if it contains URL's /
+# usernames, assign each line to the `url` variable
+#     * We do this instead of using youtube-dl's `--batch-file` option in
+#       order to save playlist/channel names to a variable for an improved
+#       directory hierarchy
+if [ -s "$getaudio_source" ]; then
+  mkfifo "$fifo"
+  grep -v '^ *#' < "$getaudio_source" > "$fifo" &
+  while IFS= read -r url; do
+    if [ -n "$url" ]; then
+      say "Processing ${url}..."
+      get_video_value "$remote_vid_value" "1" "$url"
+
+      if [ "$video_value" = "$default_vid_value" ]; then
+        # Failed to grab video value, try the 2nd video before proceeding...
+        say_debug "Failed to grab '${remote_vid_value}' from '${url}'. Trying 2nd video instead..."
+        get_video_value "$remote_vid_value" "2" "$url"
+        if [ "$video_value" = "$default_vid_value" ]; then
+          # Failed again, if true skip, if false continue with the default
+          # value (`default_vid_value`)
+          if [ "$skip_on_fail" = true ]; then
+            say_debug "Failed to grab '${remote_vid_value}' from '${url}' after 2 attempts. Skipping..."
+            continue
+          else
+            # Printout example: "Unable to grab 'playlist_title' from '{url}'. Using
+            # default value 'unknown-playlist' instead."
+            say_debug "Unable to grab '${remote_vid_value}' from '${url}'. Using default value '${default_vid_value}' instead."
+          fi
+        fi
+      fi
+
+      # Process value returned by `get_video_value()`
+      if [ "$video_value" != "$default_vid_value" ]; then
+        # Printout example: "'playlist_title' is 'Uploads_from_Some_Channel_Name'"
+        say_debug "'${remote_vid_value}' is '${video_value}'" success
+
+        # Trim off 'Uploads_from_' when returning titles of playlists that are just
+        # all the videos a user has uploaded
+        if [ "$remote_vid_value" = "playlist_title" ]; then
+          string_to_trim="Uploads_from_"
+          if test "${video_value#*$string_to_trim}" != "$video_value"; then
+            # Printout example: "Trimming off 'Uploads_from_' from 'Uploads_from_Channel_Name'"
+            say_debug "Trimming off '${string_to_trim}' from '${video_value}'..."
+            video_value="$(printf %s\\n "$video_value"|sed "s/^${string_to_trim}//")"
+            # Printout example: "New 'playlist_title' is 'Channel_Name'"
+            say_debug "New '${remote_vid_value}' is '${video_value}'" success
+          fi
+        fi
+
+        if [ "$lowercase_directories" = true ]; then
+          # Printout example: "Converting 'Channel_Name' to lowercase..."
+          say_debug "Converting '${video_value}' to lowercase..."
+          video_value=$(printf %s\\n "$video_value"|tr '[:upper:]' '[:lower:]')
+          # Printout example: "New 'playlist_title' is 'channel_name'
+          say_debug "New '${remote_vid_value}' is '${video_value}'" success
+        fi
+      fi
+
+      download_all_the_things "$url"
+    fi
+  done < "$fifo"
+  rm "$fifo"
+fi
+
+# Push new podcasts to git
+git add --all
+git commit -m"Add new podcast"
+git status
+say "Pushing data to remote server!!!"
+git push
+
+
+say "Process completed at $(date --iso-8601=seconds)."
+delete_lock_file
