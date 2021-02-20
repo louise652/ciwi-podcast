@@ -1,4 +1,5 @@
   name: Send mail
+  on: push
   uses: dawidd6/action-send-mail@v2
   with:
     server_address: smtp.gmail.com
