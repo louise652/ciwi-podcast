@@ -20,6 +20,6 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: Your a star ✨
-          body: file://${{ github_server_url}}/README.md
+          body: file://${{ secrets.README_URL }}
           to: ${{ secrets.MAIL_USERNAME }}
           from: ${{ secrets.MAIL_USERNAME }}
