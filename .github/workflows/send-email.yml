@@ -28,6 +28,5 @@ jobs:
             3. On the right pane, click on Post for the settings. Select the author. Select Podcast as the category (or it will NOT publish to Spotify). Write a brief excerpt describing the podcast episode.
             4. Finally, click on insert from url and enter the url of the audio file, located on Github. In the repo, locate the audio file, right click the View Raw link and copy the link address- this will be what you need.
             5. Publish and save all the changes and Spotify should pick up the new episode :)
-          attachments: '[{"path":"README.md"}]'
           content_type: text/html
           convert_markdown: true
