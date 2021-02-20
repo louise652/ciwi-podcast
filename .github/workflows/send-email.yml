@@ -14,6 +14,7 @@ jobs:
         uses: devellany/send-mail@v1.0.2
         with:
           host: smtp.gmail.com
+          port: 465
           account: ${{secrets.MAIL_USERNAME}}
           password: ${{secrets.MAIL_PASSWORD}}
           sender: devellany
