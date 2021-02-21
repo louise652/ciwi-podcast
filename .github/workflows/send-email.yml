@@ -18,22 +18,11 @@ jobs:
           username: ${{secrets.MAIL_USERNAME}}
           password: ${{secrets.MAIL_PASSWORD}}
           from: ${{secrets.MAIL_USERNAME}}
-          to: ${{secrets.MAIL_USERNAME}}
+          to: ${{secrets.MAIL_USERNAME}},${{secrets.SECOND_EMAIL}}
           subject: Follow these steps to upload to Spotify...
           body: |
             ## A new audio file is ready for upload.
-            Follow these steps to get the audio file and upload to WordPress. Spotify can then pick up the new episode.
-
-            1. Go to https://github.com/louise652/ciwi-podcast/tree/master/new/Ciaran_McCloy_-_Videos. This is a list of all podcasts. We are looking for the most recent file, uploaded in the last 24 hours.
-
-            2. Log in to the wordpress admin site and go into the settings. Click Posts on the left hand side and 'Add a new post'
-
-            3. Add the Episode title in the format 'Episode XX- Title of Episode'. Then below the title type /audio and select the audio dropdown option.
-
-            4. On the right pane, click on Post for the settings. Select the author. Select Podcast as the category (or it will NOT publish to Spotify). Write a brief excerpt describing the podcast episode.
-
-            5. Finally, click on insert from url and enter the url of the audio file, located on Github. In the repo, locate the audio file, right click the View Raw link and copy the link address- this will be what you need.
-
-            6. Publish and save all the changes and Spotify should pick up the new episode :)
+            Follow these steps to get the audio file of your recent YouTube video and upload to WordPress. Spotify can then pick up the new episode.
+            https://louise652.github.io/ciwi-podcast/
           content_type: text/html
           convert_markdown: true
