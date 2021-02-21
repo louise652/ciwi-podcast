@@ -11,13 +11,13 @@ Ensure that your git repo is configured correctly as the script will pull, commi
 # Running the script
 
 ## Automatic
-The script will run daily at 1pm on a cron job to check for any new podcasts. If any are found, they will be pushed up to the repo. See [here](https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx/) for more info on setting up a cron job.
+The script will run twice daily at 1pm  and 8pm on a cron job to check for any new podcasts. If any are found, they will be pushed up to the repo. See [here](https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx/) for more info on setting up a cron job.
 
 ## Manual
 Navigate to the directory of the getaudio script. Open a terminal window and type ./getaudio.
 
 After the script has finished, any new episodes of Ciwi's Podcast will be downloaded as audio to the new directory. They will be added to an archive list so they will not be re-downloaded. Theyy will be pushed up to the repo automatically as per local git setup.
-## Alerting
-A [github action](https://docs.github.com/en/actions) has been set up to send an email whenever a push has occurred. This will email the relevant accounts with info on how to uplaod the audio file to Wordpress. The action is located in the repo [here] (https://github.com/louise652/ciwi-podcast/blob/master/.github/workflows/send-email.yml). This reads email addresses, username and password from configured github [secrets](https://docs.github.com/en/actions/reference/encrypted-secrets).
+# Alerting
+The repo has been integrated with [Zapier](https://zapier.com/app/dashboard) to send an email when there are any new commits. The email contains instrcutions outlining how to upload the audio file to Wordpress. These steps are also depicted in the screenshots folder.
 # Configuration
 To change the youtube source, amend the url in the get.list file
