@@ -11,6 +11,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: SendGrid
-          uses: peter-evans/sendgrid-action@v1
-          env:
-            SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+      uses: peter-evans/sendgrid-action@v1
+      env:
+        SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
