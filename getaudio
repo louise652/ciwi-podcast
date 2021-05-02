@@ -1,4 +1,4 @@
-
+#!/usr/bin/env sh
 # Enable debugging for verbose output
 debug=false
 

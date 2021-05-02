@@ -6,10 +6,7 @@ This script has been adapted for personal purposes. The more generalised origina
 
 # Running the script
 
-## Automatic
-The script will run daily at 1pm on a cron job to check for any new podcasts. If any are found, they will be pushed up to the repo and an alert will fire to update the Wordpress site so Spotify can get the new episode. See [here](https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx/) for more info on setting up a cron job.
 
-## Manual
 Navigate to the directory of the getaudio script. Open a terminal window and type ./getaudio.
 
 
